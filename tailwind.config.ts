@@ -15,7 +15,7 @@ export default {
   	extend: {
   		fontFamily: {
   			serif: [
-  				'Lora',
+  				'Cormorant Garamond',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
@@ -24,7 +24,7 @@ export default {
   				'serif'
   			],
   			sans: [
-  				'Inter',
+  				'Montserrat',
   				'ui-sans-serif',
   				'system-ui',
   				'-apple-system',
@@ -37,7 +37,7 @@ export default {
   				'sans-serif'
   			],
   			mono: [
-  				'Space Mono',
+  				'IBM Plex Mono',
   				'ui-monospace',
   				'SFMono-Regular',
   				'Menlo',
