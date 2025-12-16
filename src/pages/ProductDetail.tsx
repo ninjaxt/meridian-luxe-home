@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Minus, Plus, Check } from "lucide-react";
@@ -11,10 +11,36 @@ import { useToast } from "@/hooks/use-toast";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const product = getProductById(id || "");
+  const product = useMemo(() => getProductById(id || ""), [id]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { toast } = useToast();
+
+  const relatedProducts = useMemo(
+    () =>
+      product
+        ? products
+            .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id)
+            .slice(0, 4)
+        : [],
+    [product]
+  );
+
+  const handleAddToCart = useCallback(() => {
+    if (!product) return;
+    toast({
+      title: "Added to Cart",
+      description: `${quantity} × ${product.name} added to your cart.`,
+    });
+  }, [product, quantity, toast]);
+
+  const handleDecreaseQuantity = useCallback(() => {
+    setQuantity((q) => Math.max(1, q - 1));
+  }, []);
+
+  const handleIncreaseQuantity = useCallback(() => {
+    setQuantity((q) => q + 1);
+  }, []);
 
   if (!product) {
     return (
@@ -33,17 +59,6 @@ const ProductDetail = () => {
       </div>
     );
   }
-
-  const relatedProducts = products
-    .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id)
-    .slice(0, 4);
-
-  const handleAddToCart = () => {
-    toast({
-      title: "Added to Cart",
-      description: `${quantity} × ${product.name} added to your cart.`,
-    });
-  };
 
   return (
     <>
@@ -143,7 +158,7 @@ const ProductDetail = () => {
                   </h3>
                   <div className="inline-flex items-center border border-border">
                     <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      onClick={handleDecreaseQuantity}
                       className="w-12 h-12 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Minus className="w-4 h-4" />
@@ -152,7 +167,7 @@ const ProductDetail = () => {
                       {quantity}
                     </span>
                     <button
-                      onClick={() => setQuantity(quantity + 1)}
+                      onClick={handleIncreaseQuantity}
                       className="w-12 h-12 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Plus className="w-4 h-4" />
